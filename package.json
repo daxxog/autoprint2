@@ -15,6 +15,7 @@
         "url"  : "https://github.com/daxxog/autoprint2.git"
     }],
     "dependencies": {
+        "node-imap": "https://github.com/daxxog/node-imap/tarball/fork1"
     },
     "bin": {
         "autoprint" : "./bin/autoprint2"
