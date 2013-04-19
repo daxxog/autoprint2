@@ -1,0 +1,22 @@
+{
+    "name"        : "autoprint",
+    "description" : "New (working) version of autoprint in JavaScript.",
+    "homepage"    : "https://github.com/daxxog/autoprint2",
+    "main"        : "autoprint2.js",
+    "version"     : "0.0.1",
+    "engines": { "node" : ">=0.7.0" },
+    "maintainers": [{
+        "name"  : "David Volm",
+        "email" : "david@volminator.com",
+        "web"   : "http://daxxog.com/"
+    }],
+    "repositories": [{
+        "type" : "git",
+        "url"  : "https://github.com/daxxog/autoprint2.git"
+    }],
+    "dependencies": {
+    },
+    "bin": {
+        "autoprint" : "./bin/autoprint2"
+    }
+}
