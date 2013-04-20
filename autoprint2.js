@@ -20,9 +20,9 @@ var opt = require('optimist')
 	argv = opt.argv,
     
     Imap = require('imap'),
-    ImapMessageStream = require('imap-message-stream'),
-    MailParser = require("mailparser").MailParser,
-    util = require('util'),
+    MailParser = require('mailparser').MailParser,
+    PDFDocument = require('pdfkit'),
+    S = require('string'),
     fs = require('fs');
 
 var imap = new Imap({
@@ -53,24 +53,36 @@ imap.connect(function(err) {
                             body: true,
                             cb: function(fetch) {
                                 fetch.on('message', function(msg) {
-                                    var ws = fs.createWriteStream('raw.email'),
-                                        mailparser = new MailParser({
-                                            //debug: true
-                                        });
+                                    var mailparser = new MailParser();
                                     
                                     mailparser.on('end', function(mail_object) {
-                                        console.log('hello');
-                                        console.log(mail_object.text);
+                                        var lines = S(mail_object.text).lines(),
+                                            doc = new PDFDocument();
+                                        
+                                        lines.forEach(function(v, i, a) {
+                                            console.log(v);
+                                            doc.text(v);
+                                        });
+                                        
+                                        /*doc.output(function(bin) {
+                                            fs.writeFile('out.pdf', bin, 'binary', function(err) {
+                                                console.log(err);
+                                            });
+                                        });*/
+                                        
+                                        doc.write('out.pdf');
                                     });
                                     
                                     msg.stream.pipe(mailparser);
-                                    msg.stream.pipe(ws);
                                 });
                             }
                         }, function(err) {
-                            if (err) throw err;
-                            console.log('Done fetching all messages!');
-                            //imap.logout();
+                            if(err) {
+                                console.error(err);
+                            } else {
+                                console.log('Done fetching all messages!');
+                                imap.logout();
+                            }
                         });
                     }
                 });
