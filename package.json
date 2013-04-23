@@ -15,7 +15,11 @@
         "url"  : "https://github.com/daxxog/autoprint2.git"
     }],
     "dependencies": {
-        "node-imap": "https://github.com/daxxog/node-imap/tarball/fork1"
+        "node-imap": "https://github.com/daxxog/node-imap/tarball/fork1",
+        "ppclient": "*",
+        "mailparser": "*",
+        "pdfkit": "https://github.com/daxxog/pdfkit/tarball/fork1",
+        "string": "*"
     },
     "bin": {
         "autoprint" : "./bin/autoprint2"

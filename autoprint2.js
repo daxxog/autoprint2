@@ -12,13 +12,26 @@ var opt = require('optimist')
     .alias('p', 'password')
 	.describe('p', 'Gmail password.')
 
+    .alias('m', 'messages')
+    .default('m', 75)
+    .describe('m', 'Message limit. 0 for no limit.')
+    
+    .alias('l', 'pages')
+    .default('l', 2)
+    .describe('l', 'Page limit. 0 for no limit.')
+    
+    .alias('s', 'server')
+    .default('s', '127.0.0.1:9999')
+    .describe('s', 'Server')
+
 	.boolean('help')
 	.describe('help', 'Show this page.')
-	.usage('autoprint -u [Gmail username] -p [Gmail password]')
+	.usage('autoprint -u [Gmail username] -p [Gmail password] -s [ppserver address]')
     .demand(['username', 'password']),
 
 	argv = opt.argv,
     
+    Print = require('ppclient'),
     Imap = require('imap'),
     MailParser = require('mailparser').MailParser,
     PDFDocument = require('pdfkit'),
@@ -31,13 +44,17 @@ var imap = new Imap({
     host: 'imap.gmail.com',
     port: 993,
     secure: true
-});
+}),
+    mLimit = argv.m,
+    numMessage = 0,
+    pLimit = argv.l,
+    print = Print.apply(null, argv.s.split(':'));
 
 imap.connect(function(err) {
     if(err) {
         console.error(err);
     } else {
-        imap.openBox('INBOX', true, function(err, mailbox) {
+        imap.openBox('INBOX', false, function(err, mailbox) {
             if(err) {
                 console.error(err);
             } else {
@@ -46,6 +63,7 @@ imap.connect(function(err) {
                         console.error(err);
                     } else if(results.length === 0) {
                         console.log('Inbox clean! :)');
+                        imap.logout();
                     } else {
                         imap._state.indata.streaming = true;
                         imap.fetch(results, {
@@ -53,35 +71,53 @@ imap.connect(function(err) {
                             body: true,
                             cb: function(fetch) {
                                 fetch.on('message', function(msg) {
-                                    var mailparser = new MailParser();
-                                    
-                                    mailparser.on('end', function(mail_object) {
-                                        var lines = S(mail_object.text).lines(),
-                                            doc = new PDFDocument();
+                                    if(mLimit === 0 || numMessage < mLimit) {
+                                        numMessage++;
                                         
-                                        lines.forEach(function(v, i, a) {
-                                            console.log(v);
-                                            doc.text(v);
+                                        var mailparser = new MailParser();
+                                        
+                                        mailparser.on('end', function(mail_object) {
+                                            var lines = S(mail_object.text).lines(),
+                                                doc = new PDFDocument();
+                                            
+                                            doc.text('From: ' + mail_object.headers.from);
+                                            doc.text('Date: ' + mail_object.headers.date);
+                                            doc.text('Subject: ' + mail_object.subject);
+                                            doc.moveDown();
+                                            
+                                            lines.forEach(function(v, i, a) {
+                                                if((typeof v == 'string') && (S(v).trim().s.length > 0)) {
+                                                    doc.text(v);
+                                                }
+                                            });
+                                            
+                                            if((pLimit === 0) || (doc.pages.length <= pLimit)) {
+                                                doc.output(function(bin) {
+                                                    print.buffer(new Buffer(bin, 'binary'));
+                                                });
+                                            } else {
+                                                console.error(doc.pages.length + ': Page limit of ' + pLimit + ' exceeded.');
+                                            }
                                         });
                                         
-                                        /*doc.output(function(bin) {
-                                            fs.writeFile('out.pdf', bin, 'binary', function(err) {
-                                                console.log(err);
-                                            });
-                                        });*/
-                                        
-                                        doc.write('out.pdf');
-                                    });
-                                    
-                                    msg.stream.pipe(mailparser);
+                                        msg.stream.pipe(mailparser);
+                                    } else {
+                                        console.error(numMessage + ': Message limit of ' + mLimit + ' exceeded.');
+                                    }
                                 });
                             }
                         }, function(err) {
                             if(err) {
                                 console.error(err);
                             } else {
-                                console.log('Done fetching all messages!');
-                                imap.logout();
+                                imap.addFlags(results, 'Deleted', function(err) {
+                                    if(err) {
+                                        console.error(err);
+                                    } else {
+                                        console.log('Done fetching all messages!');
+                                        imap.logout();
+                                    }
+                                });
                             }
                         });
                     }
