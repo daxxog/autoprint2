@@ -19,7 +19,8 @@
         "ppclient": "*",
         "mailparser": "*",
         "pdfkit": "https://github.com/daxxog/pdfkit/tarball/fork1",
-        "string": "*"
+        "string": "*",
+        "optimist": "*"
     },
     "bin": {
         "autoprint" : "./bin/autoprint2"
