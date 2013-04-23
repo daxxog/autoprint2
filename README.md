@@ -3,6 +3,13 @@ autoprint2
 
 New (working) version of [autoprint](https://github.com/daxxog/autoprint) in JavaScript.
 
+**Workflow**
+
+fetch emails -> 
+convert to PDF -> 
+send to [ppserver](https://github.com/daxxog/ppserver) ->
+delete emails;
+
 Install
 -------
 stable
