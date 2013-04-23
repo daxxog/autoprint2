@@ -7,9 +7,9 @@ Install
 -------
 stable
 ```bash
-npm install autoprint
+sudo npm install -g autoprint
 ```
 edge
 ```bash
-npm install https://github.com/daxxog/autoprint2/tarball/master
+sudo npm install -g https://github.com/daxxog/autoprint2/tarball/master
 ```
