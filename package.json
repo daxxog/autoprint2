@@ -3,7 +3,7 @@
     "description" : "New (working) version of autoprint in JavaScript.",
     "homepage"    : "https://github.com/daxxog/autoprint2",
     "main"        : "autoprint2.js",
-    "version"     : "0.0.3",
+    "version"     : "0.0.4",
     "engines": { "node" : ">=0.7.0" },
     "maintainers": [{
         "name"  : "David Volm",
@@ -19,7 +19,7 @@
         "ppclient": "*",
         "mailparser": "*",
         "pdfkit": "https://github.com/daxxog/pdfkit/tarball/fork1",
-        "string": "*",
+        "string": "https://github.com/daxxog/string.js/tarball/fork1",
         "optimist": "*"
     },
     "bin": {
