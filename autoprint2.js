@@ -77,7 +77,7 @@ imap.connect(function(err) {
                                         var mailparser = new MailParser();
                                         
                                         mailparser.on('end', function(mail_object) {
-                                            var lines = S(mail_object.text).lines(),
+                                            var lines = (typeof mail_object.text == 'undefined') ? [] : S(mail_object.text).lines(),
                                                 doc = new PDFDocument();
                                             
                                             doc.text('From: ' + mail_object.headers.from);
