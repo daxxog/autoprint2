@@ -88,7 +88,7 @@ imap.connect(function(err) {
                                             lines.forEach(function(v, i, a) {
                                             	var t = S(v).trim().s;
                                                 if((v !== null) && (typeof v == 'string') && (t.length > 0)) {
-                                                    doc.text('> ' + t);
+                                                    doc.text('` ' + t);
                                                 }
                                             });
                                             
